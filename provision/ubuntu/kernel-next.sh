@@ -13,10 +13,9 @@ sudo apt-get install -y --allow-downgrades \
 git clone --depth 1 git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git $HOME/k
 cd $HOME/k
 
+make oldconfig && make prepare
+
 cp /boot/config-`uname -r` .config
-(yes '' | make oldconfig) || true
-yes '' | make localmodconfig
-(yes '' | make oldconfig) || true
 ./scripts/config --disable CONFIG_DEBUG_INFO
 ./scripts/config --disable CONFIG_DEBUG_KERNEL
 ./scripts/config --enable CONFIG_BPF
@@ -37,21 +36,7 @@ yes '' | make localmodconfig
 ./scripts/config --enable CONFIG_HAVE_EBPF_JIT
 ./scripts/config --module CONFIG_NETDEVSIM
 
-# make and install latest kernel
-make -j `getconf _NPROCESSORS_ONLN` LOCALVERSION=-custom
 
-sudo make modules_install
-sudo make install
-sudo make headers_install INSTALL_HDR_PATH=/usr/
-make headers_install
-
-# iproute2 installation
-cd $HOME
-git clone -b "${IPROUTE_BRANCH}" git://git.kernel.org/pub/scm/linux/kernel/git/shemminger/iproute2.git
-cd iproute2/
-./configure --prefix=/usr
-make -j `getconf _NPROCESSORS_ONLN`
-sudo make install
-
-cp -R ${HOME}/k /usr/src/linux-source-$(uname-r)
-ln -s linux-source-$(uname -r) linux-headers-$(uname -r)
+sudo make deb-pkg
+cd ..
+sudo dpkg -i linux-*.deb

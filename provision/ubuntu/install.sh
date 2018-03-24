@@ -3,12 +3,17 @@
 set -eu
 
 source "${ENV_FILEPATH}"
+export 'IPROUTE_BRANCH'=${IPROUTE_BRANCH:-"v4.14.0"}
 
 CLANG_DIR="clang+llvm-3.8.1-x86_64-linux-gnu-ubuntu-16.04"
 CLANG_FILE="${CLANG_DIR}.tar.xz"
 CLANG_URL="http://releases.llvm.org/3.8.1/${CLANG_FILE}"
 
+cp -R ${HOME}/k /usr/src/linux-source-$(uname -r)
+ln -s linux-source-$(uname -r) linux-headers-$(uname -r)
+
 #If VBOX server
+export KERN_DIR=/usr/src/linux-source-$(uname-r)
 VER="`cat /home/vagrant/.vbox_version`";
 ISO="VBoxGuestAdditions_$VER.iso";
 mkdir -p /tmp/vbox;
@@ -62,7 +67,7 @@ pip install yamllint
 
 #IP Route
 cd /tmp
-git clone -b v4.14.0 git://git.kernel.org/pub/scm/linux/kernel/git/shemminger/iproute2.git
+git clone -b ${IPROUTE_BRANCH} git://git.kernel.org/pub/scm/linux/kernel/git/shemminger/iproute2.git
 cd /tmp/iproute2
 ./configure
 make -j `getconf _NPROCESSORS_ONLN`

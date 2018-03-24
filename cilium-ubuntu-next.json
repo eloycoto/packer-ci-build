@@ -95,7 +95,8 @@
     },{
       "type": "shell",
       "environment_vars": [
-        "ENV_FILEPATH=/tmp/env.bash"
+        "ENV_FILEPATH=/tmp/env.bash",
+        "IPROUTE_BRANCH=net-next"
       ],
       "execute_command": "echo 'vagrant' | {{ .Vars }} sudo -E -S bash '{{ .Path }}'",
       "expect_disconnect": true,
