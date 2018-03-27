@@ -13,17 +13,17 @@ cp -R ${HOME}/k /usr/src/linux-source-$(uname -r)
 ln -s linux-source-$(uname -r) linux-headers-$(uname -r)
 
 #If VBOX server
-export KERN_DIR=/usr/src/linux-source-$(uname-r)
-VER="`cat /home/vagrant/.vbox_version`";
-ISO="VBoxGuestAdditions_$VER.iso";
-mkdir -p /tmp/vbox;
-mount -o loop ${HOME_DIR}/$ISO /tmp/vbox;
-sh /tmp/vbox/VBoxLinuxAdditions.run \
-    || echo "VBoxLinuxAdditions.run exited $? and is suppressed." \
-    "For more read https://www.virtualbox.org/ticket/12479";
-umount /tmp/vbox;
-rm -rf /tmp/vbox;
-rm -f ${HOME_DIR}/*.iso;
+# export KERN_DIR=/usr/src/linux-source-$(uname-r)
+# VER="`cat /home/vagrant/.vbox_version`";
+# ISO="VBoxGuestAdditions_$VER.iso";
+# mkdir -p /tmp/vbox;
+# mount -o loop ${HOME_DIR}/$ISO /tmp/vbox;
+# sh /tmp/vbox/VBoxLinuxAdditions.run \
+#     || echo "VBoxLinuxAdditions.run exited $? and is suppressed." \
+#     "For more read https://www.virtualbox.org/ticket/12479";
+# umount /tmp/vbox;
+# rm -rf /tmp/vbox;
+# rm -f ${HOME_DIR}/*.iso;
 
 echo "Provision a new server"
 sudo apt-get update
