@@ -10,28 +10,18 @@ CLANG_DIR="clang+llvm-3.8.1-x86_64-linux-gnu-ubuntu-16.04"
 CLANG_FILE="${CLANG_DIR}.tar.xz"
 CLANG_URL="http://releases.llvm.org/3.8.1/${CLANG_FILE}"
 
+export GOLANG_VERSION="1.11.1"
+export GOLANG_VERSION_MINOR="1.11"
+export ETCD_VERSION="v3.1.0"
+export DOCKER_COMPOSE_VERSION="1.16.1"
+export CONTAINERD_VERSION="1.1.0"
+export CLANG_ROOT=/usr/local/clang
+# export HOME_DIR=/home/vagrant
+# export HOME=/home/vagrant
+export GOPATH="${HOME}/go"
+export PATH="${GOPATH}/bin:${CLANG_ROOT}/bin:$PATH"
+
 # VBoxguestAdditions installation
-
-VER="`cat /home/vagrant/.vbox_version`";
-ISO="VBoxGuestAdditions_$VER.iso";
-
-# Validate that custom GuestAdditions are needed
-if [[ -n "${GUESTADDITIONS}" ]]; then
-    cd $HOME_DIR
-    ISO="VBoxGuestAdditions.iso"
-    wget $GUESTADDITIONS  -O $ISO
-fi
-
-mkdir -p /tmp/vbox;
-mount -o loop ${HOME_DIR}/$ISO /tmp/vbox;
-sh /tmp/vbox/VBoxLinuxAdditions.run \
-    || echo "VBoxLinuxAdditions.run exited $? and is suppressed." \
-    "For more read https://www.virtualbox.org/ticket/12479";
-umount /tmp/vbox;
-rm -rf /tmp/vbox;
-rm -f ${HOME_DIR}/*.iso;
-
-
 
 echo "Provision a new server"
 sudo apt-get update
@@ -71,8 +61,8 @@ cd ..
 rm -fr util-linux-2.30.1/ util-linux-2.30.1.tar.gz
 
 # Documentation dependencies
-pip3 install --user sphinx sphinxcontrib-httpdomain sphinxcontrib-openapi sphinx-rtd-theme sphinx-tabs recommonmark
-pip3 install --user yamllint
+sudo -H pip3 install sphinx sphinxcontrib-httpdomain sphinxcontrib-openapi sphinx-rtd-theme sphinx-tabs recommonmark
+sudo -H pip3 install yamllint
 
 #IP Route
 cd /tmp
@@ -114,7 +104,6 @@ EOF
 #Install packages
 sudo apt-get update
 sudo apt-get install -y docker-ce
-sudo usermod -aG docker vagrant
 
 #Install Golang
 cd /tmp/
@@ -129,6 +118,7 @@ go version
 sudo sh -c "curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose"
 sudo chmod +x /usr/local/bin/docker-compose
 
+<<<<<<< Updated upstream
 #ETCD installation
 wget -nv "https://github.com/coreos/etcd/releases/download/${ETCD_VERSION}/etcd-${ETCD_VERSION}-linux-amd64.tar.gz"
 tar -xf "etcd-${ETCD_VERSION}-linux-amd64.tar.gz"
@@ -151,18 +141,12 @@ EOF
 sudo systemctl enable etcd
 sudo systemctl start etcd
 
-sudo -u vagrant -E sh -c 'echo "export PATH='${PATH}':${HOME_DIR}/.local/bin" >> "${HOME_DIR}/.bashrc"'
-
-# Packages installed by vagrant user via pip3 are installed in its home directory.
-echo "export PATH=${PATH}:/home/vagrant/.local/bin" >> "/root/.bashrc"
-
-# Allow vagrant user to access newly installed Python packages.
-chown -R "vagrant:vagrant" ${HOME_DIR}/.local
-
 # Clean all downloaded packages
 sudo apt-get -y clean
 sudo apt-get -y autoclean
 
+=======
+>>>>>>> Stashed changes
 # Disable systemd-resolved service
 # https://github.com/cilium/cilium/issues/2750
 sudo systemctl disable systemd-resolved.service
@@ -186,3 +170,11 @@ sudo systemctl restart systemd-journald
 
 # Kernel parameters
 sudo sh -c 'echo "kernel.randomize_va_space=0" > /etc/sysctl.d/67-randomize_va_space.conf'
+
+go get -u github.com/cilium/go-bindata/... && \
+go get -u github.com/google/gops && \
+go get -u github.com/golang/protobuf/protoc-gen-go && \
+go get -u github.com/lyft/protoc-gen-validate && \
+go get github.com/subfuzion/envtpl && \
+go get github.com/ksonnet/kubecfg && \
+go get -u github.com/gordonklaus/ineffassign
